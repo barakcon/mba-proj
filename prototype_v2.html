@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AdoptAI</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f7f8fb; --panel:#ffffff; --ink:#1a1d29; --muted:#6b7280;
+    --line:#eceef3; --accent:#6366f1; --accent-soft:#eef0fe;
+    --good:#10b981; --warn:#f59e0b; --shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px rgba(16,24,40,.05);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+  /* top bar */
+  .top{height:60px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 22px;background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-.3px}
+  .logo .dot{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#6366f1,#a855f7)}
+  .ranges{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:11px}
+  .ranges button{border:0;background:transparent;color:var(--muted);padding:6px 13px;border-radius:8px;
+    cursor:pointer;font:inherit;font-weight:500;transition:.18s}
+  .ranges button:hover{color:var(--ink)}
+  .ranges button.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+
+  /* layout */
+  .wrap{display:flex;min-height:calc(100vh - 60px)}
+  .side{width:220px;flex:none;background:var(--panel);border-right:1px solid var(--line);
+    padding:20px 16px;display:flex;flex-direction:column}
+  .side h4{margin:4px 6px 12px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .dept{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;cursor:pointer;
+    transition:background .15s;user-select:none}
+  .dept:hover{background:var(--bg)}
+  .dept input{appearance:none;width:18px;height:18px;border:2px solid #d1d5db;border-radius:6px;cursor:pointer;
+    position:relative;transition:.18s;flex:none}
+  .dept input:checked{background:var(--accent);border-color:var(--accent)}
+  .dept input:checked::after{content:"";position:absolute;left:5px;top:1px;width:4px;height:9px;
+    border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .dept .swatch{width:9px;height:9px;border-radius:50%;flex:none}
+  .settings{margin-top:auto;display:flex;align-items:center;gap:10px;padding:11px;border-radius:10px;
+    cursor:pointer;color:var(--muted);transition:.15s}
+  .settings:hover{background:var(--bg);color:var(--ink)}
+
+  .main{flex:1;padding:22px 26px;min-width:0}
+  .tabs{display:flex;gap:26px;border-bottom:1px solid var(--line);margin-bottom:22px}
+  .tab{position:relative;padding:0 2px 14px;cursor:pointer;color:var(--muted);font-weight:600;
+    background:0;border:0;font:inherit;transition:color .18s}
+  .tab:hover{color:var(--ink)}
+  .tab.on{color:var(--ink)}
+  .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;
+    background:var(--accent);border-radius:2px;animation:slide .25s ease}
+  @keyframes slide{from{transform:scaleX(.3);opacity:0}to{transform:scaleX(1);opacity:1}}
+
+  .grid{display:grid;gap:18px}
+  .row2{grid-template-columns:1fr 1fr}
+  @media(max-width:1000px){.row2{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;
+    box-shadow:var(--shadow);animation:rise .35s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .card h3{margin:0 0 2px;font-size:14px}
+  .card .sub{margin:0 0 14px;color:var(--muted);font-size:12.5px}
+  .chartbox{position:relative;height:240px}
+  .chartbox.tall{height:300px}
+
+  .kpi{font-size:40px;font-weight:760;letter-spacing:-1px;line-height:1}
+  .kpi.green{color:var(--good)}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;
+    background:var(--accent-soft);color:var(--accent)}
+
+  .opps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media(max-width:1100px){.opps{grid-template-columns:1fr 1fr}}
+  .opp{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;
+    box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;animation:rise .35s ease both}
+  .opp:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(16,24,40,.10)}
+  .opp .tag{font-size:11px;font-weight:600;color:var(--muted)}
+  .opp .save{font-size:22px;font-weight:720;color:var(--good);margin:6px 0 8px}
+  .opp p{margin:0;font-size:12.5px;color:#374151}
+
+  .roi-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .roi-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;
+    box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s;animation:rise .35s ease both}
+  .roi-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(16,24,40,.10)}
+  .rc-head{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--muted)}
+  .rc-num{font-size:30px;font-weight:760;letter-spacing:-1px;margin:8px 0 2px}
+  .rc-num span{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
+  .rc-sub{font-size:12px;color:var(--muted);margin:0 0 12px}
+  .rc-bar{position:relative;height:30px}
+  .muted{color:var(--muted)}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="logo"><span class="dot"></span>AdoptAI</div>
+  <div class="ranges" id="ranges">
+    <button data-d="30" class="on">Last 30 days</button>
+    <button data-d="90">Last 90 days</button>
+    <button data-d="180">Last 180 days</button>
+    <button data-d="365">Last 12 months</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <aside class="side">
+    <h4>Departments</h4>
+    <div id="depts"></div>
+    <div class="settings">⚙️ Settings</div>
+  </aside>
+
+  <main class="main">
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-t="usage">AI usage</button>
+      <button class="tab" data-t="spend">AI spend</button>
+      <button class="tab" data-t="quality">AI Quality</button>
+      <button class="tab" data-t="roi">AI ROI ✨</button>
+    </div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<script>
+const DEPARTMENTS = {
+  "R&D":{color:"#6366f1",team:540,metrics:["SDLC","DORA"],sources:[
+    {name:"Claude",seats:420,users:360,seatCost:60,tokensPerDayM:185,tokenCostPerM:6.5},
+    {name:"Cursor",seats:400,users:282,seatCost:40,tokensPerDayM:120,tokenCostPerM:5},
+    {name:"Git",seats:480,users:455,seatCost:8},
+    {name:"Jira",seats:500,users:468,seatCost:14},
+  ]},
+  "Sales":{color:"#f59e0b",team:300,metrics:["New Logos","New ARR","New Expansions"],sources:[
+    {name:"Salesforce",seats:280,users:262,seatCost:165},
+    {name:"Gong",seats:250,users:191,seatCost:135,tokensPerDayM:64,tokenCostPerM:7},
+    {name:"Outreach",seats:240,users:205,seatCost:100},
+    {name:"ZoomInfo",seats:200,users:118,seatCost:120},
+  ]},
+  "Marketing":{color:"#10b981",team:160,metrics:["Referrals","Leads","Exposure"],sources:[
+    {name:"HubSpot",seats:140,users:131,seatCost:90},
+    {name:"Google Analytics",seats:120,users:88,seatCost:55},
+    {name:"Meta Ads",seats:80,users:61,seatCost:70},
+    {name:"Glean",seats:130,users:96,seatCost:35,tokensPerDayM:48,tokenCostPerM:4.5},
+  ]},
+};
+
+const OPPORTUNITIES = [
+  {dep:"R&D",save:18400,title:"AI rules → Skills",text:"42 R&D “AI rules” can be converted to lighter “AI Skills”, cutting context window across ~6,800 AI sessions/day."},
+  {dep:"R&D",save:9100,title:"Idle Cursor seats",text:"73 Cursor seats billed at $40 but using under $10 of tokens — reclaim or downgrade."},
+  {dep:"Marketing",save:12600,title:"Off-hours Glean agents",text:"19 scheduled Glean agents run nightly and on weekends with no consumers of their output."},
+  {dep:"Marketing",save:7300,title:"Mispriced GA campaigns",text:"11 Google Analytics campaigns flagged as mispriced vs. AI-modeled value."},
+  {dep:"Sales",save:15200,title:"Gong token waste",text:"Mislabeled Salesforce data makes Gong agents consume ~5× the tokens for the same call summary."},
+  {dep:"Sales",save:4800,title:"Idle ZoomInfo seats",text:"82 ZoomInfo seats with no query in 30 days — consolidate licenses."},
+  {dep:"R&D",save:6200,title:"Redundant Claude retries",text:"Failed tool calls auto-retry up to 4×; capping at 2 recovers wasted output tokens."},
+  {dep:"Marketing",save:3900,title:"Duplicate HubSpot syncs",text:"Overlapping enrichment workflows double-process the same contacts."},
+];
+
+const KPI_UPLIFT = {
+  "SDLC":22,"DORA":34,"New Logos":17,"New ARR":26,"New Expansions":14,
+  "Referrals":12,"Leads":29,"Exposure":19
+};
+
+const state = {days:30, depts:["R&D"], tab:"usage"};
+const charts = [];
+const fmt$ = n => "$"+Math.round(n).toLocaleString();
+const fmtK = n => n>=1000 ? "$"+(n/1000).toFixed(n>=10000?0:1)+"k" : "$"+Math.round(n);
+
+function rand(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return ()=>(s=s*16807%2147483647)/2147483647;}
+const palette = ["#6366f1","#a855f7","#ec4899","#f59e0b","#10b981","#06b6d4","#8b5cf6","#f43f5e","#84cc16","#0ea5e9"];
+
+function selectedSources(){
+  return state.depts.flatMap(d => DEPARTMENTS[d].sources.map((s,i)=>({...s,dep:d})));
+}
+function periodSpend(s){return s.seats*s.seatCost*(state.days/30) + tokenSpend(s);}
+function tokenSpend(s){return s.tokensPerDayM ? s.tokensPerDayM*s.tokenCostPerM*state.days : 0;}
+
+function dailySeries(s,valueFn){
+  const r = rand(s.name.length*131 + s.seats);
+  const out=[];
+  for(let i=state.days-1;i>=0;i--){
+    const dow=(new Date(Date.now()-i*864e5)).getDay();
+    const weekend = dow===0||dow===6 ? .45 : 1;
+    const trend = 1 + (state.days-i)/state.days*0.18;
+    out.push(valueFn(s) * weekend * trend * (.9+r()*.2));
+  }
+  return out;
+}
+function dateLabels(){
+  const out=[];
+  for(let i=state.days-1;i>=0;i--){
+    const d=new Date(Date.now()-i*864e5);
+    out.push(d.toLocaleDateString(undefined,{month:"short",day:"numeric"}));
+  }
+  return out;
+}
+
+/* chart helpers */
+Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+Chart.defaults.color = "#6b7280";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.boxWidth = 7;
+const baseScale = {grid:{color:"#f1f2f6"},border:{display:false},ticks:{maxRotation:0}};
+function mk(canvas,cfg){cfg.options=Object.assign({responsive:true,maintainAspectRatio:false,
+  animation:{duration:650,easing:"easeOutQuart"}},cfg.options||{});
+  charts.push(new Chart(canvas,cfg));}
+
+function clearCharts(){charts.forEach(c=>c.destroy());charts.length=0;}
+
+function animateValue(el,to,prefix){
+  let start=null,dur=700;
+  function step(t){if(!start)start=t;const p=Math.min((t-start)/dur,1);
+    el.textContent=prefix+Math.round(to*p).toLocaleString();
+    if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+
+/* ---- tab renderers ---- */
+function render(){
+  clearCharts();
+  const v=document.getElementById("view");
+  const src=selectedSources();
+  if(!src.length){v.innerHTML='<div class="card"><p class="sub">Select a department to see data.</p></div>';return;}
+  ({usage:viewUsage,spend:viewSpend,quality:viewQuality,roi:viewROI})[state.tab](v,src);
+}
+
+function viewUsage(v,src){
+  v.innerHTML=`
+    <div class="grid row2">
+      <div class="card"><h3>Seats vs. weekly active</h3><p class="sub">Adoption per data source — people</p><div class="chartbox"><canvas id="c1"></canvas></div></div>
+      <div class="card"><h3>Token usage</h3><p class="sub">Avg daily tokens (M) by source</p><div class="chartbox"><canvas id="c2"></canvas></div></div>
+    </div>
+    <div class="grid" style="margin-top:18px"><div class="card"><h3>Daily active users</h3><p class="sub">Users per source over the period</p><div class="chartbox tall"><canvas id="c3"></canvas></div></div></div>`;
+
+  mk(c1,{type:"bar",data:{labels:src.map(s=>s.name),datasets:[
+    {label:"Seats",data:src.map(s=>s.seats),backgroundColor:"#dfe2ee",borderRadius:6},
+    {label:"Weekly active",data:src.map(s=>s.users),backgroundColor:"#6366f1",borderRadius:6}]},
+    options:{scales:{x:baseScale,y:baseScale}}});
+
+  const tok=src.filter(s=>s.tokensPerDayM);
+  mk(c2,{type:"bar",data:{labels:tok.map(s=>s.name),datasets:[{data:tok.map(s=>s.tokensPerDayM),
+    backgroundColor:tok.map((_,i)=>palette[i]),borderRadius:6}]},
+    options:{plugins:{legend:{display:false}},scales:{x:baseScale,y:baseScale}}});
+
+  const labels=dateLabels();
+  mk(c3,{type:"line",data:{labels,datasets:src.map((s,i)=>({label:s.name,
+    data:dailySeries(s,x=>x.users),borderColor:palette[i%palette.length],
+    backgroundColor:"transparent",borderWidth:2,tension:.35,pointRadius:0}))},
+    options:{interaction:{mode:"index",intersect:false},scales:{x:Object.assign({ticks:{maxTicksLimit:8}},baseScale),y:baseScale}}});
+}
+
+function viewSpend(v,src){
+  v.innerHTML=`
+    <div class="grid row2">
+      <div class="card"><h3>Spend by data source</h3><p class="sub">Total paid over the period — dollars</p><div class="chartbox"><canvas id="c1"></canvas></div></div>
+      <div class="card"><h3>Token spend</h3><p class="sub">Token cost over the period by source</p><div class="chartbox"><canvas id="c2"></canvas></div></div>
+    </div>
+    <div class="grid" style="margin-top:18px"><div class="card"><h3>Daily spend</h3><p class="sub">Spend per source over the period</p><div class="chartbox tall"><canvas id="c3"></canvas></div></div></div>`;
+
+  mk(c1,{type:"bar",data:{labels:src.map(s=>s.name),datasets:[{data:src.map(periodSpend),
+    backgroundColor:src.map((_,i)=>palette[i%palette.length]),borderRadius:6}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.raw)}}},
+    scales:{x:baseScale,y:Object.assign({ticks:{callback:fmtK}},baseScale)}}});
+
+  const tok=src.filter(s=>s.tokensPerDayM);
+  mk(c2,{type:"bar",data:{labels:tok.map(s=>s.name),datasets:[{data:tok.map(tokenSpend),
+    backgroundColor:tok.map((_,i)=>palette[i]),borderRadius:6}]},
+    options:{plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.raw)}}},
+    scales:{x:baseScale,y:Object.assign({ticks:{callback:fmtK}},baseScale)}}});
+
+  const dailyCost=s=>(s.seats*s.seatCost/30)+(s.tokensPerDayM?s.tokensPerDayM*s.tokenCostPerM:0);
+  mk(c3,{type:"line",data:{labels:dateLabels(),datasets:src.map((s,i)=>({label:s.name,
+    data:dailySeries(s,dailyCost),borderColor:palette[i%palette.length],fill:true,
+    backgroundColor:palette[i%palette.length]+"14",borderWidth:2,tension:.35,pointRadius:0}))},
+    options:{interaction:{mode:"index",intersect:false},plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+": "+fmt$(c.raw)}}},
+    scales:{x:Object.assign({ticks:{maxTicksLimit:8}},baseScale),y:Object.assign({ticks:{callback:fmtK}},baseScale)}}});
+}
+
+function viewQuality(v,src){
+  const opps=OPPORTUNITIES.filter(o=>state.depts.includes(o.dep)).sort((a,b)=>b.save-a.save);
+  const monthly=opps.reduce((s,o)=>s+o.save,0);
+  const total=monthly*(state.days/30);
+  const byDep=state.depts.map(d=>({d,v:opps.filter(o=>o.dep===d).reduce((s,o)=>s+o.save,0)*(state.days/30)}));
+  const top=opps.slice(0,4);
+
+  v.innerHTML=`
+    <div class="grid row2">
+      <div class="card"><h3>Total potential savings</h3><p class="sub">Identified over the period</p>
+        <div class="kpi green" id="bigsave">$0</div>
+        <p class="sub" style="margin-top:10px">${opps.length} opportunities · ${fmt$(monthly)}/mo run-rate</p></div>
+      <div class="card"><h3>Savings by department</h3><p class="sub">Where the waste sits</p><div class="chartbox"><canvas id="c2"></canvas></div></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin:24px 2px 12px">
+      <h3 style="margin:0;font-size:15px">Top opportunities</h3>
+      <span class="pill">Top 4 of ${opps.length}</span>
+    </div>
+    <div class="opps">${top.map((o,i)=>`
+      <div class="opp" style="animation-delay:${i*60}ms">
+        <div class="tag">${o.dep} · ${o.title}</div>
+        <div class="save">${fmtK(o.save)}/mo</div>
+        <p>${o.text}</p>
+      </div>`).join("")}</div>`;
+
+  animateValue(document.getElementById("bigsave"),total,"$");
+  mk(c2,{type:"bar",data:{labels:byDep.map(x=>x.d),datasets:[{data:byDep.map(x=>x.v),
+    backgroundColor:byDep.map(x=>DEPARTMENTS[x.d].color),borderRadius:6}]},
+    options:{indexAxis:"y",plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt$(c.raw)}}},
+    scales:{x:Object.assign({ticks:{callback:fmtK}},baseScale),y:baseScale}}});
+}
+
+function viewROI(v){
+  const metrics=state.depts.flatMap(d=>DEPARTMENTS[d].metrics.map(m=>({d,m,uplift:KPI_UPLIFT[m]})));
+
+  v.innerHTML=`
+    <div class="card"><h3>KPIs with vs. without AI</h3><p class="sub">Indexed to a pre-AI baseline of 100 — the green segment is the AI-driven lift</p><div class="chartbox tall"><canvas id="c1"></canvas></div></div>
+    <h3 style="margin:24px 2px 4px;font-size:15px">Equivalent headcount</h3>
+    <p class="sub" style="margin:0 2px 14px">What the AI lift on each KPI is worth in additional people who'd contribute the same</p>
+    <div class="roi-cards">${metrics.map((x,i)=>{
+      const dep=DEPARTMENTS[x.d];
+      const heads=Math.round(dep.team*x.uplift/100);
+      return `<div class="roi-card" style="animation-delay:${i*55}ms">
+        <div class="rc-head"><span class="swatch" style="background:${dep.color}"></span>${x.m} · ${x.d}</div>
+        <div class="rc-num">+${heads} <span>people</span></div>
+        <p class="rc-sub">+${x.uplift}% lift ≈ ${heads} added to a ${dep.team}-person team</p>
+        <div class="rc-bar"><canvas id="rc${i}"></canvas></div>
+      </div>`;
+    }).join("")}</div>`;
+
+  mk(c1,{type:"bar",data:{labels:metrics.map(x=>x.m),datasets:[
+    {label:"Without AI",data:metrics.map(()=>100),backgroundColor:"#dfe2ee",borderRadius:4,stack:"s"},
+    {label:"AI lift",data:metrics.map(x=>x.uplift),backgroundColor:metrics.map(x=>DEPARTMENTS[x.d].color),
+      borderRadius:{topLeft:6,topRight:6},stack:"s"}]},
+    options:{plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+": "+(c.datasetIndex?"+":"")+c.raw+(c.datasetIndex?"%":"")}}},
+    scales:{x:Object.assign({stacked:true},baseScale),y:Object.assign({stacked:true},baseScale)}}});
+
+  metrics.forEach((x,i)=>{
+    const dep=DEPARTMENTS[x.d], heads=Math.round(dep.team*x.uplift/100);
+    mk(document.getElementById("rc"+i),{type:"bar",data:{labels:[""],datasets:[
+      {label:"Team",data:[dep.team],backgroundColor:"#e7e9f1",borderRadius:4,stack:"h"},
+      {label:"AI-equivalent",data:[heads],backgroundColor:dep.color,borderRadius:4,stack:"h"}]},
+      options:{indexAxis:"y",animation:{duration:700,easing:"easeOutQuart"},
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.raw}}},
+        scales:{x:{stacked:true,display:false},y:{stacked:true,display:false}}}});
+  });
+}
+
+/* ---- controls ---- */
+function buildDepts(){
+  const el=document.getElementById("depts");
+  el.innerHTML=Object.entries(DEPARTMENTS).map(([d,o])=>`
+    <label class="dept">
+      <input type="checkbox" value="${d}" ${state.depts.includes(d)?"checked":""}>
+      <span class="swatch" style="background:${o.color}"></span>${d}
+    </label>`).join("");
+  el.querySelectorAll("input").forEach(cb=>cb.onchange=()=>{
+    state.depts=[...el.querySelectorAll("input:checked")].map(x=>x.value);
+    render();
+  });
+}
+document.getElementById("ranges").onclick=e=>{
+  if(e.target.tagName!=="BUTTON")return;
+  document.querySelectorAll("#ranges button").forEach(b=>b.classList.toggle("on",b===e.target));
+  state.days=+e.target.dataset.d;render();
+};
+document.getElementById("tabs").onclick=e=>{
+  if(!e.target.classList.contains("tab"))return;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t===e.target));
+  state.tab=e.target.dataset.t;render();
+};
+
+buildDepts();
+render();
+</script>
+</body>
+</html>
