@@ -19,14 +19,30 @@
       
       <div id="root"></div>
       <a href="#" id="owl-brand" aria-label="Owl">
-        <img src="../logo/owl_icon.png" alt="Owl mark" class="owl-brand-icon" />
-        <img src="../logo/owl_wordmark.png" alt="Owl" class="owl-brand-word" />
+        <svg class="owl-brand-icon" viewBox="0 0 120 108" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="owlStroke" x1="0" y1="0" x2="120" y2="108" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#8b5cf6"/>
+              <stop offset="1" stop-color="#6d28d9"/>
+            </linearGradient>
+          </defs>
+          <g stroke="url(#owlStroke)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M60 40 L18 12 L14 44 L26 84 L60 100 L94 84 L106 44 L102 12 Z"/>
+            <path d="M18 12 L60 40 L102 12"/>
+            <path d="M60 40 L52 62 L60 82 L68 62 Z" fill="url(#owlStroke)"/>
+            <circle cx="37" cy="56" r="13"/>
+            <circle cx="83" cy="56" r="13"/>
+          </g>
+          <circle cx="37" cy="56" r="4.5" fill="url(#owlStroke)"/>
+          <circle cx="83" cy="56" r="4.5" fill="url(#owlStroke)"/>
+        </svg>
+        <span class="owl-brand-word">Owl</span>
       </a>
       <style>
-        #owl-brand{position:fixed;top:16px;left:20px;z-index:9999;display:flex;align-items:center;gap:10px;text-decoration:none;filter:drop-shadow(0 1px 4px rgba(124,58,237,.25));transition:transform .15s ease}
+        #owl-brand{position:fixed;top:14px;left:18px;z-index:9999;display:flex;align-items:center;gap:9px;text-decoration:none;transition:transform .15s ease}
         #owl-brand:hover{transform:translateY(-1px)}
         #owl-brand .owl-brand-icon{height:34px;width:auto;display:block}
-        #owl-brand .owl-brand-word{height:26px;width:auto;display:block}
+        #owl-brand .owl-brand-word{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:700;font-size:24px;letter-spacing:-.01em;line-height:1;color:#6d28d9}
       </style>
 
     <script>(function(){const m=document.createElement("link").relList;if(m&&m.supports&&m.supports("modulepreload"))return;for(const N of document.querySelectorAll('link[rel="modulepreload"]'))S(N);new MutationObserver(N=>{for(const f of N)if(f.type==="childList")for(const w of f.addedNodes)w.tagName==="LINK"&&w.rel==="modulepreload"&&S(w)}).observe(document,{childList:!0,subtree:!0});function u(N){const f={};return N.integrity&&(f.integrity=N.integrity),N.referrerPolicy&&(f.referrerPolicy=N.referrerPolicy),N.crossOrigin==="use-credentials"?f.credentials="include":N.crossOrigin==="anonymous"?f.credentials="omit":f.credentials="same-origin",f}function S(N){if(N.ep)return;N.ep=!0;const f=u(N);fetch(N.href,f)}})();var Fo={exports:{}},Ir={},Bo={exports:{}},re={};/**
