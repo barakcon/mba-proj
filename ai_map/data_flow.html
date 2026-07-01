@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owl — Usage Visibility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e6e9f0;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+
+    --rd: #2f6df0;     --rd-soft: #eef4ff;   --rd-line: #d6e4ff;
+    --sales: #1f9d57;  --sales-soft: #ecfbf2; --sales-line: #c8efd8;
+    --mkt: #7c4ad6;    --mkt-soft: #f4eefe;  --mkt-line: #e4d6fb;
+
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+    --shadow-lg: 0 12px 30px rgba(16,24,40,.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 40px 32px;
+  }
+  .wrap { max-width: 1380px; margin: 0 auto; }
+
+  /* column headers */
+  .colheads {
+    display: grid;
+    grid-template-columns: 1fr 52px 132px 52px 0.92fr;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+  .colhead { text-align: center; padding: 0 8px; }
+  .colhead h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+  .colhead p { color: var(--muted); font-size: 15px; font-weight: 500; margin-top: 4px; }
+  .colhead.gap { visibility: hidden; }
+  .snailmark { height: 30px; width: auto; display: inline-block; vertical-align: middle; }
+
+  /* rows */
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 52px 132px 52px 0.92fr;
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 22px;
+  }
+
+  .panel {
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    box-shadow: var(--shadow);
+    display: flex;
+    overflow: hidden;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .panel:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+  /* department tab on the sources panel */
+  .dept {
+    flex-shrink: 0;
+    width: 100px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 12px;
+    color: #fff;
+  }
+  .dept .ico { font-size: 28px; line-height: 1; }
+  .dept .name { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+
+  .sources { background: var(--card); }
+  .row.rd    .dept { background: var(--rd); }
+  .row.sales .dept { background: var(--sales); }
+  .row.mkt   .dept { background: var(--mkt); }
+
+  /* logo strip */
+  .logos {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 22px 18px;
+  }
+  .tool { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 0; text-align: center; }
+  .tool img, .tool .glyph {
+    width: 42px; height: 42px; border-radius: 11px; object-fit: contain; background: #fff;
+  }
+  .tool .glyph { display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 16px; }
+  .tool span { font-size: 13px; font-weight: 600; line-height: 1.2; }
+  .more { color: var(--muted); font-size: 24px; font-weight: 700; flex-shrink: 0; padding-top: 8px; }
+
+  /* arrow */
+  .arrow { display: flex; align-items: center; justify-content: center; }
+  .arrow svg { width: 46px; height: 26px; }
+  .row.rd    .arrow svg { color: var(--rd); }
+  .row.sales .arrow svg { color: var(--sales); }
+  .row.mkt   .arrow svg { color: var(--mkt); }
+
+  /* Owl hub panel */
+  .hub {
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    border-width: 2px;
+  }
+  .row.rd    .hub { background: var(--rd-soft);   border-color: var(--rd-line); }
+  .row.sales .hub { background: var(--sales-soft); border-color: var(--sales-line); }
+  .row.mkt   .hub { background: var(--mkt-soft);  border-color: var(--mkt-line); }
+  .hub .badge {
+    width: 60px; height: 60px; border-radius: 16px; flex-shrink: 0;
+    display: grid; place-items: center; color: #fff; font-size: 30px;
+    box-shadow: 0 6px 16px rgba(15,23,42,.16);
+  }
+  .row.rd    .hub .badge { background: var(--rd); }
+  .row.sales .hub .badge { background: var(--sales); }
+  .row.mkt   .hub .badge { background: var(--mkt); }
+  .hub .txt .brand { font-size: 21px; font-weight: 800; letter-spacing: -0.01em; }
+  .hub .txt .sub { color: var(--muted); font-size: 14.5px; font-weight: 500; margin-top: 2px; }
+
+  /* metrics panel */
+  .metrics {
+    align-items: stretch;
+    padding: 16px 8px;
+  }
+  .row.rd    .metrics { background: var(--rd-soft);   border-color: var(--rd-line); }
+  .row.sales .metrics { background: var(--sales-soft); border-color: var(--sales-line); }
+  .row.mkt   .metrics { background: var(--mkt-soft);  border-color: var(--mkt-line); }
+  .metric {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; padding: 8px 6px; text-align: center;
+  }
+  .metric + .metric { border-left: 1px solid; }
+  .row.rd    .metric + .metric { border-color: var(--rd-line); }
+  .row.sales .metric + .metric { border-color: var(--sales-line); }
+  .row.mkt   .metric + .metric { border-color: var(--mkt-line); }
+  .metric svg { width: 30px; height: 30px; }
+  .row.rd    .metric svg { color: var(--rd); }
+  .row.sales .metric svg { color: var(--sales); }
+  .row.mkt   .metric svg { color: var(--mkt); }
+  .metric span { font-size: 15px; font-weight: 700; line-height: 1.2; }
+
+  @media (max-width: 1080px) {
+    body { padding: 24px 16px; }
+    .colheads { display: none; }
+    .row { grid-template-columns: 1fr; gap: 10px; margin-bottom: 30px; }
+    .arrow { transform: rotate(90deg); height: 30px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="colheads">
+    <div class="colhead">
+      <h2>Sources</h2>
+    </div>
+    <div class="colhead gap"></div>
+    <div class="colhead">
+      <img class="snailmark" src="../logo/owl_wordmark_flat.png" alt="Owl">
+    </div>
+    <div class="colhead gap"></div>
+    <div class="colhead">
+      <h2>Performance Metrics</h2>
+    </div>
+  </div>
+
+  <!-- R&D -->
+  <div class="row rd">
+    <div class="panel sources">
+      <div class="dept"><span class="ico">&lt;/&gt;</span><span class="name">R&amp;D</span></div>
+      <div class="logos">
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=64" data-c="#d97757" data-l="C" alt=""><span>Claude</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=cursor.com&sz=64" data-c="#0f172a" data-l="C" alt=""><span>Cursor</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=64" data-c="#1f2937" data-l="Git" alt=""><span>Git</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=atlassian.com&sz=64" data-c="#2684ff" data-l="J" alt=""><span>Jira</span></div>
+        <div class="more">…</div>
+      </div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h40M33 5l9 8-9 8"/></svg></div>
+    <div class="panel hub">
+      <div class="badge">🐌</div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h40M33 5l9 8-9 8"/></svg></div>
+    <div class="panel metrics">
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+        <span>SDLC</span>
+      </div>
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z"/><path d="M12 12l4-3"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/></svg>
+        <span>DORA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales -->
+  <div class="row sales">
+    <div class="panel sources">
+      <div class="dept"><span class="ico">$</span><span class="name">Sales</span></div>
+      <div class="logos">
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" data-c="#00a1e0" data-l="S" alt=""><span>Salesforce</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=gong.io&sz=64" data-c="#7c3aed" data-l="G" alt=""><span>Gong</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=outreach.io&sz=64" data-c="#5046e5" data-l="O" alt=""><span>Outreach</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=zoominfo.com&sz=64" data-c="#e11d2a" data-l="Z" alt=""><span>ZoomInfo</span></div>
+        <div class="more">…</div>
+      </div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h40M33 5l9 8-9 8"/></svg></div>
+    <div class="panel hub">
+      <div class="badge">🐌</div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h40M33 5l9 8-9 8"/></svg></div>
+    <div class="panel metrics">
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14c2.6.2 5 2 5 5"/></svg>
+        <span>New Logos</span>
+      </div>
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.6-1-1.6-1.5-2.7-1.5-1.6 0-2.8.9-2.8 2.2 0 1.4 1.2 1.9 2.8 2.3 1.6.4 2.8.9 2.8 2.3 0 1.3-1.2 2.2-2.8 2.2-1.2 0-2.2-.5-2.8-1.6M12 6v1.7M12 16.3V18"/></svg>
+        <span>New ARR</span>
+      </div>
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V11M9 19V7M14 19v-5M19 19V5"/><path d="M14 7l3-3 3 1" /></svg>
+        <span>New Expansions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketing -->
+  <div class="row mkt">
+    <div class="panel sources">
+      <div class="dept"><span class="ico">📣</span><span class="name">Marketing</span></div>
+      <div class="logos">
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=hubspot.com&sz=64" data-c="#ff7a59" data-l="H" alt=""><span>HubSpot</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=analytics.google.com&sz=64" data-c="#f9ab00" data-l="GA" alt=""><span>Google Analytics</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=64" data-c="#0a66c2" data-l="in" alt=""><span>LinkedIn Ads</span></div>
+        <div class="tool"><img src="https://www.google.com/s2/favicons?domain=meta.com&sz=64" data-c="#0866ff" data-l="M" alt=""><span>Meta Ads</span></div>
+        <div class="more">…</div>
+      </div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h40M33 5l9 8-9 8"/></svg></div>
+    <div class="panel hub">
+      <div class="badge">🐌</div>
+    </div>
+    <div class="arrow"><svg viewBox="0 0 46 26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h40M33 5l9 8-9 8"/></svg></div>
+    <div class="panel metrics">
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14c2.6.2 5 2 5 5"/></svg>
+        <span>Referrals</span>
+      </div>
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>
+        <span>Leads</span>
+      </div>
+      <div class="metric">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Exposure</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tool img').forEach(img => {
+    img.addEventListener('error', () => {
+      const g = document.createElement('div');
+      g.className = 'glyph';
+      g.style.background = img.dataset.c;
+      g.textContent = img.dataset.l;
+      img.replaceWith(g);
+    });
+  });
+</script>
+</body>
+</html>

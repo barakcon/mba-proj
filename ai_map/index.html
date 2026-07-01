@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise AI Market Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0e1a3a;
+    --purple: #5b3fd6;
+    --teal: #0f8a8a;
+    --blue: #2f6df0;
+    --green: #1f7a4d;
+    --ink: #0f172a;
+    --muted: #64748b;
+    --line: #e6e9f0;
+    --card: #ffffff;
+    --bg: #f4f6fb;
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 1px 2px rgba(15,23,42,.04);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 28px;
+  }
+  .map {
+    max-width: 1480px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 18px;
+    align-items: start;
+  }
+  h1 {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 40px;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  /* ---- main column ---- */
+  .main { display: flex; flex-direction: column; gap: 16px; }
+
+  .band {
+    display: grid;
+    grid-template-columns: 188px 1fr;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 14px;
+  }
+  .label {
+    border-radius: 14px;
+    padding: 18px 16px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    min-height: 120px;
+  }
+  .label .ico { font-size: 26px; line-height: 1; }
+  .label h2 { font-size: 21px; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }
+  .label.purple { background: var(--purple); }
+  .label.teal   { background: var(--teal); }
+  .label.blue   { background: var(--blue); }
+  .label.green  { background: var(--green); }
+
+  .content { display: flex; flex-direction: column; justify-content: center; }
+
+  /* functional apps: 6 sub-columns */
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+  }
+  .col { padding: 0 14px; }
+  .col + .col { border-left: 1px solid var(--line); }
+  .col h3 {
+    color: var(--purple);
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* single / double row bands */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    align-items: center;
+  }
+  .row.spread { justify-content: space-around; }
+
+  /* vendor item */
+  .v { display: flex; align-items: center; gap: 9px; padding: 5px 0; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .logo {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    object-fit: contain;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .chip {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    display: grid; place-items: center;
+    color: #fff; font-weight: 800; font-size: 12px;
+    flex-shrink: 0;
+  }
+  .col .v { font-size: 13px; }
+
+  /* ---- sidebar ---- */
+  .side { display: flex; flex-direction: column; gap: 18px; }
+  .box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .box .head {
+    color: #fff;
+    padding: 16px 18px;
+    display: flex; align-items: center; gap: 11px;
+    font-weight: 800; font-size: 15px; line-height: 1.2;
+  }
+  .box .head .ico { font-size: 20px; }
+  .head.navyhead { background: var(--navy); }
+  .head.purplehead { background: linear-gradient(135deg, #6d4ae0, #5b3fd6); }
+
+  .box.highlight {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--card), var(--card)) padding-box,
+      linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+    box-shadow: 0 10px 30px rgba(91,63,214,.22), 0 0 0 4px rgba(91,63,214,.08);
+  }
+  .box .body { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 2px; }
+  .box .v { font-size: 14px; }
+  .divider { height: 1px; background: var(--line); margin: 8px 0; }
+
+  .snail-pill {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    padding: 11px 16px;
+    margin-bottom: 12px;
+    background:
+      linear-gradient(#fff, #fff) padding-box,
+      linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+    box-shadow: 0 4px 14px rgba(91,63,214,.18);
+  }
+  .snail-pill .mark { height: 26px; width: auto; display: block; }
+  .snail-pill .name {
+    font-size: 20px; font-weight: 800; letter-spacing: 0.02em;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  @media (max-width: 1100px) {
+    .map { grid-template-columns: 1fr; }
+    .cols { grid-template-columns: repeat(3, 1fr); gap: 16px 0; }
+    .col:nth-child(3n+1) { border-left: none; }
+  }
+  @media (max-width: 720px) {
+    body { padding: 14px; }
+    h1 { font-size: 26px; }
+    .band { grid-template-columns: 1fr; }
+    .cols { grid-template-columns: repeat(2, 1fr); }
+    .col { border-left: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="map">
+  <h1>ENTERPRISE AI MARKET MAP</h1>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Functional Apps -->
+    <div class="band">
+      <div class="label purple">
+        <span class="ico">▦</span>
+        <h2>Functional<br>Apps</h2>
+      </div>
+      <div class="content">
+        <div class="cols">
+          <div class="col">
+            <h3>Sales / GTM</h3>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=gong.io&sz=64" data-c="#7c3aed" data-l="G" alt="">Gong</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=clay.com&sz=64" data-c="#f97316" data-l="C" alt="">Clay</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=apollo.io&sz=64" data-c="#f59e0b" data-l="A" alt="">Apollo</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=outreach.io&sz=64" data-c="#2563eb" data-l="O" alt="">Outreach</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=11x.ai&sz=64" data-c="#0f172a" data-l="11" alt="">11x</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=regie.ai&sz=64" data-c="#dc2626" data-l="R" alt="">Regie.ai</div>
+          </div>
+          <div class="col">
+            <h3>Marketing / Content</h3>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=jasper.ai&sz=64" data-c="#ec4899" data-l="J" alt="">Jasper</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=writer.com&sz=64" data-c="#111827" data-l="W" alt="">Writer</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=typeface.ai&sz=64" data-c="#ef4444" data-l="T" alt="">Typeface</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=copy.ai&sz=64" data-c="#0ea5e9" data-l="C" alt="">Copy.ai</div>
+          </div>
+          <div class="col">
+            <h3>R&D / Coding</h3>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=cursor.com&sz=64" data-c="#0f172a" data-l="C" alt="">Cursor</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=github.com&sz=64" data-c="#1f2937" data-l="GH" alt="">GitHub Copilot</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=windsurf.com&sz=64" data-c="#10b981" data-l="W" alt="">Windsurf</div>
+          </div>
+          <div class="col">
+            <h3>Legal</h3>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=harvey.ai&sz=64" data-c="#111827" data-l="H" alt="">Harvey</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=spellbook.legal&sz=64" data-c="#1e3a8a" data-l="S" alt="">Spellbook</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=lexion.ai&sz=64" data-c="#0f766e" data-l="L" alt="">Lexion</div>
+          </div>
+          <div class="col">
+            <h3>Support / CX</h3>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=decagon.ai&sz=64" data-c="#0f172a" data-l="D" alt="">Decagon</div>
+            <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=intercom.com&sz=64" data-c="#1d4ed8" data-l="F" alt="">Fin (Intercom)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agents & Workflow Automation -->
+    <div class="band">
+      <div class="label teal">
+        <span class="ico">🤖</span>
+        <h2>Agents &amp;<br>Workflow<br>Automation</h2>
+      </div>
+      <div class="content">
+        <div class="row spread">
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=salesforce.com&sz=64" data-c="#00a1e0" data-l="A" alt="">Salesforce Agentforce</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" data-c="#0078d4" data-l="M" alt="">Copilot Studio</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=glean.com&sz=64" data-c="#6d4aff" data-l="G" alt="">Glean</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=sierra.ai&sz=64" data-c="#16a34a" data-l="S" alt="">Sierra</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=wonderful.ai&sz=64" data-c="#111827" data-l="W" alt="">Wonderful</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=relevanceai.com&sz=64" data-c="#2563eb" data-l="R" alt="">Relevance AI</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=cognition.ai&sz=64" data-c="#111827" data-l="C" alt="">Cognition (Devin)</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=crewai.com&sz=64" data-c="#f48120" data-l="C" alt="">CrewAI</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=langchain.com&sz=64" data-c="#1c3c3c" data-l="L" alt="">LangChain</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enterprise Platforms -->
+    <div class="band">
+      <div class="label blue">
+        <span class="ico">✦</span>
+        <h2>Enterprise<br>Platforms</h2>
+      </div>
+      <div class="content">
+        <div class="row spread">
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=openai.com&sz=64" data-c="#10a37f" data-l="O" alt="">ChatGPT Enterprise</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=microsoft.com&sz=64" data-c="#0078d4" data-l="M" alt="">Microsoft 365 Copilot</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" data-c="#4285f4" data-l="G" alt="">Gemini Enterprise</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=claude.ai&sz=64" data-c="#d97757" data-l="C" alt="">Claude Enterprise</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Infra & Models -->
+    <div class="band">
+      <div class="label green">
+        <span class="ico">🗄</span>
+        <h2>Infra &amp;<br>Models</h2>
+      </div>
+      <div class="content">
+        <div class="row">
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=openai.com&sz=64" data-c="#10a37f" data-l="O" alt="">OpenAI API</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=64" data-c="#d97757" data-l="A" alt="">Anthropic</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=google.com&sz=64" data-c="#4285f4" data-l="G" alt="">Google</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=aws.amazon.com&sz=64" data-c="#ff9900" data-l="A" alt="">AWS</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=azure.microsoft.com&sz=64" data-c="#0078d4" data-l="A" alt="">Azure AI</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=databricks.com&sz=64" data-c="#ee3d2c" data-l="D" alt="">Databricks</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=snowflake.com&sz=64" data-c="#29b5e8" data-l="S" alt="">Snowflake</div>
+          <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=mistral.ai&sz=64" data-c="#ff7000" data-l="M" alt="">Mistral AI</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="side">
+
+    <div class="box">
+      <div class="head navyhead">
+        <span class="ico">🛡</span>
+        <span>AI SECURITY,<br>RISK &amp; COMPLIANCE</span>
+      </div>
+      <div class="body">
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=lakera.ai&sz=64" data-c="#0f172a" data-l="L" alt="">Lakera</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=protectai.com&sz=64" data-c="#2563eb" data-l="P" alt="">Protect AI</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=hiddenlayer.com&sz=64" data-c="#16a34a" data-l="H" alt="">HiddenLayer</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=credo.ai&sz=64" data-c="#06b6d4" data-l="C" alt="">Credo AI</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=holisticai.com&sz=64" data-c="#0f766e" data-l="H" alt="">Holistic AI</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=robustintelligence.com&sz=64" data-c="#374151" data-l="RI" alt="">Robust Intelligence</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=calypsoai.com&sz=64" data-c="#1d4ed8" data-l="C" alt="">CalypsoAI</div>
+      </div>
+    </div>
+
+    <div class="box highlight">
+      <div class="head purplehead">
+        <span class="ico">📈</span>
+        <span>AI GOVERNANCE</span>
+      </div>
+      <div class="body">
+        <div class="snail-pill">
+          <img class="mark" src="../logo/owl_icon_flat.png" alt="">
+          <span class="name">Owl</span>
+        </div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=larridin.com&sz=64" data-c="#3b82f6" data-l="L" alt="">Larridin</div>
+        <div class="v"><span class="chip" style="background:#111827">M</span>Milestone</div>
+        <div class="v"><img class="logo" src="https://www.google.com/s2/favicons?domain=toriihq.com&sz=64" data-c="#10a37f" data-l="T" alt="">Torii</div>
+        <div class="divider"></div>
+        <div class="v"><span class="chip" style="background:#64748b">CF</span>Consulting Firms</div>
+        <div class="v"><span class="chip" style="background:#475569">&lt;/&gt;</span>Homegrown Tools</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('img.logo').forEach(img => {
+    const fallback = () => {
+      const chip = document.createElement('span');
+      chip.className = 'chip';
+      chip.style.background = img.dataset.c;
+      chip.textContent = img.dataset.l;
+      img.replaceWith(chip);
+    };
+    img.addEventListener('error', fallback);
+    if (img.complete && img.naturalWidth === 0) fallback();
+  });
+</script>
+</body>
+</html>
