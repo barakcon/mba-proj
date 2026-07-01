@@ -44,6 +44,17 @@
         #owl-brand .owl-brand-icon{height:34px;width:auto;display:block}
         #owl-brand .owl-brand-word{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-weight:700;font-size:24px;letter-spacing:-.01em;line-height:1;color:#6d28d9}
       </style>
+      <script>
+        (function hideOriginalBrand(){
+          function run(){
+            var mark = document.querySelector('.rounded-xl.bg-blue-600 svg')?.closest('.h-13')
+              || document.querySelector('.h-13.flex.items-center.px-4');
+            if (mark) mark.style.visibility = 'hidden';
+          }
+          new MutationObserver(run).observe(document.documentElement, {childList:true, subtree:true});
+          run();
+        })();
+      </script>
 
     <script>(function(){const m=document.createElement("link").relList;if(m&&m.supports&&m.supports("modulepreload"))return;for(const N of document.querySelectorAll('link[rel="modulepreload"]'))S(N);new MutationObserver(N=>{for(const f of N)if(f.type==="childList")for(const w of f.addedNodes)w.tagName==="LINK"&&w.rel==="modulepreload"&&S(w)}).observe(document,{childList:!0,subtree:!0});function u(N){const f={};return N.integrity&&(f.integrity=N.integrity),N.referrerPolicy&&(f.referrerPolicy=N.referrerPolicy),N.crossOrigin==="use-credentials"?f.credentials="include":N.crossOrigin==="anonymous"?f.credentials="omit":f.credentials="same-origin",f}function S(N){if(N.ep)return;N.ep=!0;const f=u(N);fetch(N.href,f)}})();var Fo={exports:{}},Ir={},Bo={exports:{}},re={};/**
  * @license React
